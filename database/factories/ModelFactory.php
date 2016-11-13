@@ -21,3 +21,10 @@ $factory->define(VueFin\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory->state(VueFin\User::class, 'admin', function (Faker\Generator $faker) {
+
+    return [
+        'role'  => \VueFin\User::ROLE_ADMIN
+    ];
+});
