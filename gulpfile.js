@@ -1,4 +1,4 @@
-const gulp =  require('gulp');
+const gulp = require('gulp');
 const elixir = require('laravel-elixir');
 const webpack = require('webpack');
 const webpackDevServer = require('webpack-dev-server');
@@ -25,32 +25,35 @@ Elixir.webpack.mergeConfig(webpackDevConfig);
  */
 
 gulp.task('webpack-dev-server', () => {
-    let inlineHot = [
+    var inlineHot = [
         'webpack/hot/dev-server',
         'webpack-dev-server/client?http://192.168.10.10:8080'
     ];
     Elixir.webpack.config.entry.admin.concat(inlineHot);
 
-    new webpackDevServer( webpack(Elixir.webpack.config), {
+    new webpackDevServer(webpack(Elixir.webpack.config), {
         hot: true,
         proxy: {
-          '*': 'http://192.168.10.10:8080'
+            '*': 'http://192.168.10.10:8080'
         },
         watchOptions: {
             poll: true,
             aggregateTimeout: 300
         },
         publicPath: Elixir.webpack.config.output.publicPath,
-        stats: { colors: true}
-    }).listen(3333, "localhost", function () {
+        stats: { colors: true }
+    }).listen(8080, "localhost", function() {
         console.log("Bundling project...");
     })
 });
 
 elixir(mix => {
     mix.sass('./resources/assets/admin/sass/admin.scss')
-       .copy('./node_modules/materialize-css/fonts/roboto','./public/fonts/roboto');
-       // .webpack('app.js');
+        .copy('./node_modules/materialize-css/fonts/roboto', './public/fonts/roboto');
 
+    mix.browserSync({
+        host: '0.0.0.0',
+        proxy: 'http://192.168.10.10:8000'
+    });
     gulp.start('webpack-dev-server');
 });
