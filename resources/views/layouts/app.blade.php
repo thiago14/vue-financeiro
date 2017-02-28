@@ -82,6 +82,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/js/app.js"></script>
+    <script src="{{ asset('build/admin.bundles.js') }}"></script>
 </body>
 </html>
