@@ -34,6 +34,11 @@ class AuthController extends Controller
         return $this->sendFailedLoginResponse($request);
     }
 
+    public function refreshToken(Request $request){
+        $token = Auth::guard('api')->refresh();
+        return $this->sendLoginResponse($request, $token);
+    }
+
     protected function sendLoginResponse(Request $request, $token)
     {
         $this->clearLoginAttempts($request);
@@ -62,16 +67,11 @@ class AuthController extends Controller
         ],401);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
+        Auth::guard('api')->logout();
 
-        $this->guard()->logout();
-
-        $request->session()->flush();
-
-        $request->session()->regenerate();
-
-        return redirect(env('URL_ADMIN_LOGIN'));
+        return response()->json([], 204);
     }
 
 }
