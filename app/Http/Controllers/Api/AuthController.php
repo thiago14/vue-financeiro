@@ -34,17 +34,33 @@ class AuthController extends Controller
         return $this->sendFailedLoginResponse($request);
     }
 
+    public function getUser(Request $request)
+    {
+
+        $credentials = $this->credentials($request);
+
+        return response()->json([
+            'user' => $credentials
+        ]);
+    }
+
+    public function logout()
+    {
+        Auth::guard('api')->logout();
+
+        return response()->json([], 204);
+    }
+
     public function refreshToken(Request $request){
         $token = Auth::guard('api')->refresh();
         return $this->sendLoginResponse($request, $token);
     }
 
-    protected function sendLoginResponse(Request $request, $token)
+    protected function sendFailedLoginResponse(Request $request)
     {
-        $this->clearLoginAttempts($request);
         return response()->json([
-            'token' => $token
-        ]);
+            'message' => Lang::get('auth.failed')
+        ],401);
     }
 
     protected function sendLockoutResponse(Request $request)
@@ -60,18 +76,12 @@ class AuthController extends Controller
         ], 403);
     }
 
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendLoginResponse(Request $request, $token)
     {
+        $this->clearLoginAttempts($request);
         return response()->json([
-            'message' => Lang::get('auth.failed')
-        ],401);
-    }
-
-    public function logout()
-    {
-        Auth::guard('api')->logout();
-
-        return response()->json([], 204);
+            'token' => $token
+        ]);
     }
 
 }
